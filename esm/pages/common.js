@@ -4,7 +4,7 @@ const {render,html} = lighterhtml;
 export const title=(subTitle,sub2Title)=> html`
     <div class="menu top-menu">
         <img src="king.jpg" alt="king"/>
-        <h3 class="title">Le Bombu</h3>
+        <h3 class="title">El Bombu</h3>
         <h5 class="subtitle">${subTitle}</h5>
     </div>
     ${sub2Title?div({content:sub2Title,class:"sub2Title"}):''}
