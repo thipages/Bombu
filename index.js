@@ -25,14 +25,14 @@
     const trafalgarGoalIndexes=()=> {
         return _goals.reduce((a,c,i)=> c[3]===1?a.concat(i):a,[]);
     };
-    const checkResults=(gIndex,trickList)=> {
+    const checkTrickList=(trickList)=> {
         let valid=true;
         trickList.forEach(goal => {
-            if (valid) valid=checkResults_unitary(goal.gIndex,goal.tricks);
+            if (valid) valid=checkTrickList_unitary(goal.gIndex,goal.tricks);
         });
         return valid;
     };
-    const checkResults_unitary=(gIndex,trickPerPlayer)=> {
+    const checkTrickList_unitary=(gIndex, trickPerPlayer)=> {
         if (_goals[gIndex][0] === REUSSITE) {
             return sum(trickPerPlayer) === 3 && countZero(trickPerPlayer) === 2;
         } else {
@@ -48,7 +48,36 @@
             return _goals[gIndex][2]*result;
         }
     };
-    const states=(num)=> {
+    const calculateScoreFromTrickList=(num,trickList)=> {
+        let scores=fillArray(num,0);
+        trickList.forEach (trick=> {
+            trick.tricks.forEach((score,index)=> {
+                scores[index]+=calculateScore(trick.gIndex,score);
+            });
+        });
+        return scores;
+    };
+    const createTrick=(gIndex,tricks)=> ({gIndex:gIndex,tricks:tricks});
+    const fillWithCompletedScores=(num)=>fillArray(num).map(a=>_goals.map((goal,gIndex)=>
+            goal[0]===TRAFALGAR
+                ? calculateScoreFromTrickList(
+                    num,trafalgarGoalIndexes().map(gIndex =>
+                    createTrick(gIndex,fillArray(num).map((d,index)=>index===0?_goals[gIndex][1]:0)))
+                )
+                :goal[0]===REUSSITE
+                    ? calculateScoreFromTrickList(
+                        num,[createTrick(gIndex,fillArray(num).map((d,index)=>index===1?1:index===2?2:0))]
+                    )
+                    : calculateScoreFromTrickList(
+                        num,[createTrick(gIndex,fillArray(num).map((d,index)=>index===0&&goal[0]!==ROI?goal[1]:0))]
+                    )
+    ));
+
+    const fillWithEmptyScores=(num)=>fillArray(num).map(a=>_goals.map(goal=>
+        fillArray(num).map(c=>0)
+    ));
+
+    const states=(num,test)=> {
         const getTotalScoreByPlayer=()=> {
             let total=fillArray(players.length,0);
             lScores.forEach(player=>player.forEach(goal=>goal.forEach((score,pgIndex)=>total[pgIndex]+=score)));
@@ -65,23 +94,31 @@
         };
         const addTricks=(pIndex,gIndex,trickList)=> {
             lDone[pIndex][gIndex]=1;
-            trickList.forEach (trick=> {
-                trick.tricks.forEach((score,index)=>
-                    lScores[pIndex][gIndex][index]+=calculateScore(trick.gIndex,score));
-            });
-            console.log("lScores",lScores);
+            lScores[pIndex][gIndex]=calculateScoreFromTrickList(num,trickList);
         };
-        const lScores=fillArray(num).map(a=>_goals.map(goal=>
-            players.map(c=>0)
-        ));
-        const lDone=fillArray(num).map(p=>_goals.map(p1=>0));
+        const _isOver=()=> {
+            let isOver=true;
+            lDone.forEach(player=>player.map(done=>{
+                if (isOver && !done) isOver=false;}
+            ));
+            return isOver;
+        };
+
+        const _reset=()=> {
+            lScores=test?fillWithCompletedScores(num):fillWithEmptyScores(num);
+            lDone=fillArray(num).map(p=>_goals.map(goal=>test && goal[0]!==ROI?1:0));
+        };
+        let lScores,lDone;
+        _reset();
         return {
+            isOver:()=>_isOver(),
             done:(pIndex,gIndex)=>lDone[pIndex][gIndex]===1,
             add : (pIndex,gIndex,trickList)=>addTricks(pIndex,gIndex,trickList),
             doneList:(gIndex)=>fillArray(num).map((item, pIndex)=>lDone[pIndex][gIndex]),
             scoreList:(pIndex,gIndex)=>lScores[pIndex][gIndex],
             totalScoreByPlayer:()=>getTotalScoreByPlayer(),
-            scoreByGoal:(gIndex)=>getScoreByGoal(gIndex)
+            scoreByGoal:(gIndex)=>getScoreByGoal(gIndex),
+            reset:()=>_reset()
         }
     };
 
@@ -109,6 +146,8 @@
         ${_tfoot}
         </table>`;
     };
+
+    const button=(model)=>html`<button class="${model.class}" disabled=${model.disabled} data=${model.data} onclick=${model.onclick}>${model.content}</button>`;
     const div=(model)=> html`<div class=${model.class} data=${model.data} onclick=${model.onclick}>${model.content}</div>`;
 
     const {render: render$1,html: html$1} = lighterhtml;
@@ -172,9 +211,10 @@
     const E_DONE=0;
     const E_NOT_DONE=1;
     const E_ALL=2;
+    const E_RESET=2;
     const doneCss=(rowIndex,gIndex,states)=> rowIndex===0?"" :states.done(rowIndex-1,gIndex)?"circle":"empty";
     const fillCell=(ctd,pIndex,gIndex,states)=>ctd===0 && !states.done(pIndex,gIndex) ?'\xa0':ctd;
-    const getBody=(players,goals, states,shownGoal)=> {
+    const getBody=(players,goals, states)=> {
         const table=()=> {
                 let bodyContent=[];
                 goals.map((goal,_gIndex) => [goal[0], ...states.scoreByGoal(_gIndex)]).forEach((row, gIndex) => {
@@ -189,11 +229,13 @@
             table:()=>table(),
         }
     };
-
+    const messageOver=(btnModel)=>html$3`<div style="text-align: right">Partie Terminée ${button(btnModel)}</div>`;
 
     const onclick=event=> {
         let data=event.target.data;
-        if (data.pIndex===-1) {
+        if (data==='reset') {
+            _listener$1(EVENT(E_RESET, null));
+        } else if (data.pIndex===-1) {
             if (data.rowType==='main') _listener$1(EVENT(E_ALL, data));
         } else {
             if (data.rowType === 'main') {
@@ -205,22 +247,26 @@
             }
         }
     };
-    const model=(mStates,shownGoal)=> ({
+    const model=(mStates)=> ({
         tbody:{content:getBody(players,_goals,mStates).table()},
         thead:THEAD(),
         tfoot: {content:[tr(['Total', ...mStates.totalScoreByPlayer()].map(ctd=>td$1(ctd,"footer",-1,-1)))]}
     });
     const update$1=(event)=> {
-        if (event && event.type===E_ALL) {
-            shownGoal=(shownGoal===event.data.gIndex)?null:event.data.gIndex;
-        }
+        const mButtonOver= {
+            onclick:onclick,
+            data:'reset',
+            content:'REJOUER',
+            class:'button'
+        };
         return html$3`
         ${title("Scores")}
+        ${mStates.isOver()?messageOver(mButtonOver):''}
         ${table(model(mStates))}
     `;
     };
 
-    let mStates, shownGoal;
+    let mStates;
     let _listener$1,_sharedData;
     const register$1=(listener, sharedData)=> {
         _listener$1=listener;
@@ -230,10 +276,10 @@
     };
 
     const {render: render$4,html: html$4} = lighterhtml;
-    const leftContent=(goal)=> (isCompleted()?"\u2611":"\xa0\xa0\xa0")+goal;
+    const leftContent=(gIndex,goal)=> (isCompleted_unitary(gIndex)?"\u2611":"\xa0\xa0\xa0")+goal;
     const goalModel=(gIndex)=>[
             {
-                content:leftContent(_goals[gIndex][0])
+                content:leftContent(gIndex,_goals[gIndex][0])
             },
             ...fillArray(players.length).map((e,i)=>({content:iDiv(gIndex,i)}))
     ];
@@ -262,11 +308,11 @@
     const E1_VALIDER=1;
     const E1_ANNULER=2;
     const fillZero=()=>fillArray(players.length,0);
-    const isCompleted=()=>checkResults(gIndex,trickList);
+    const isCompleted_all=()=>checkTrickList(trickList);
+    const isCompleted_unitary=(gIndex)=>checkTrickList_unitary(gIndex,filterTrick(gIndex)[0].tricks);
     const filterTrick=(gIndex)=>trickList.filter(trick=>trick.gIndex===gIndex);
-    const updateTrickList=(pgIndex,pIndex,gIndex)=> {
+    const updateTrickList=(pgIndex,gIndex)=> {
         let tricks=filterTrick(gIndex)[0].tricks;
-        console.log("résussite",tricks,pgIndex,pIndex,gIndex);
         if (_goals[gIndex][0]===REUSSITE) {
             if (tricks[pgIndex] === 0) {
                 if (sum(tricks) === 1) {
@@ -279,7 +325,7 @@
                 for (let i=0;i<tricks.length;i++) tricks[i]=0;
                 tricks[pgIndex] = 1;
             }
-        } else if (!isCompleted()) {
+        } else if (!isCompleted_unitary(gIndex)) {
             tricks[pgIndex]++;
         } else {
             tricks[pgIndex]=0;
@@ -292,11 +338,10 @@
         if (data==='valider') {
             type=E1_VALIDER;
             transfer.trickList=trickList;
-            console.log("emit",transfer);
         } else if (data==='annuler') {
             type=E1_ANNULER;
         } else {
-            updateTrickList(data.pIndex,pIndex,data.gIndex);
+            updateTrickList(data.pIndex,data.gIndex);
             type=E1_SCORE;
         }
         _listener$2(EVENT(type,transfer));
@@ -317,7 +362,7 @@
         }
         gIndex=args.data.gIndex;
         pIndex=args.data.pIndex;
-        let bClass=["button",isCompleted()?"button-validate":"button-disabled"].join(" ");
+        let bClass=["button",isCompleted_all()?"button-validate":"button-disabled"].join(" ");
         return html$4`
         ${title("Saisie",_goals[gIndex][0]+" annoncé par "+players[pIndex])}
         ${table(
@@ -327,9 +372,10 @@
             }
         )}
         <div class="menu bottom-menu">
-        <button class="button button-cancel" data=${'annuler'} onclick=${onclick$1}>Annuler</button>
-        <button class=${bClass} data=${'valider'} onclick=${onclick$1} disabled=${!isCompleted()}>Valider</button>
+            <button class="button button-cancel" data=${'annuler'} onclick=${onclick$1}>Annuler</button>
+            <button class=${bClass} data=${'valider'} onclick=${onclick$1} disabled=${!isCompleted_all()}>Valider</button>
         </div>
+        <div style="font-size:10px;margin-right:10px">v1.0</div>
     `;
     };
     let gIndex,pIndex;
@@ -347,6 +393,9 @@
             case 0:
                 if (args.type===E_NOT_DONE) {
                     page(1);
+                } else if (args.type===E_RESET) {
+                    state.reset();
+                    same();
                 } else {
                     same();
                 }
@@ -363,7 +412,7 @@
                 break
         }
     };
-    const state=states(players.length);
+    const state=states(players.length,false);
     const updater=register(
         {state},
         listener$1,
