@@ -127,13 +127,19 @@ img {
     color:black;
 }
 @media only screen and (max-width: 900px) {
-    html,body,.button  {
+    html,body  {
         font-size:20px;
+    }
+    .button  {
+        font-size:15px;
     }
 }
 @media only screen and (max-width: 420px) {
-    html,body,.button  {
+    html,body{
         font-size:15px;
+    }
+    .button  {
+        font-size:10px;
     }
 }
 

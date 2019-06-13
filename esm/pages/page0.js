@@ -1,6 +1,6 @@
 import {fillArray} from "../utils";
 import {_goals, players} from "../model";
-import {table} from "../components";
+import {button, table} from "../components";
 import {EVENT} from "../controller";
 import {tr,td,} from "./common.js";
 import {THEAD, title} from "./common";
@@ -8,9 +8,10 @@ const {render,html} = lighterhtml;
 export const E_DONE=0;
 export const E_NOT_DONE=1;
 export const E_ALL=2;
+export const E_RESET=2;
 const doneCss=(rowIndex,gIndex,states)=> rowIndex===0?"" :states.done(rowIndex-1,gIndex)?"circle":"empty";
 const fillCell=(ctd,pIndex,gIndex,states)=>ctd===0 && !states.done(pIndex,gIndex) ?'\xa0':ctd;
-const getBody=(players,goals, states,shownGoal)=> {
+const getBody=(players,goals, states)=> {
     const table=()=> {
             let bodyContent=[];
             goals.map((goal,_gIndex) => [goal[0], ...states.scoreByGoal(_gIndex)]).forEach((row, gIndex) => {
@@ -25,11 +26,13 @@ const getBody=(players,goals, states,shownGoal)=> {
         table:()=>table(),
     }
 };
-
+const messageOver=(btnModel)=>html`<div style="text-align: right">Partie Terminée ${button(btnModel)}</div>`;
 
 const onclick=event=> {
     let data=event.target.data;
-    if (data.pIndex===-1) {
+    if (data==='reset') {
+        _listener(EVENT(E_RESET, null));
+    } else if (data.pIndex===-1) {
         if (data.rowType==='main') _listener(EVENT(E_ALL, data));
     } else {
         if (data.rowType === 'main') {
@@ -41,18 +44,23 @@ const onclick=event=> {
         }
     }
 };
-const model=(mStates,shownGoal)=> ({
-    tbody:{content:getBody(players,_goals,mStates,shownGoal).table()},
+const model=(mStates)=> ({
+    tbody:{content:getBody(players,_goals,mStates).table()},
     thead:THEAD(),
     tfoot: {content:[tr(['Total', ...mStates.totalScoreByPlayer()].map(ctd=>td(ctd,"footer",-1,-1)))]}
 });
 const update=(event)=> {
-    if (event && event.type===E_ALL) {
-        shownGoal=(shownGoal===event.data.gIndex)?null:event.data.gIndex;
-    }
+    const mButtonOver= {
+        onclick:onclick,
+        data:'reset',
+        content:'REJOUER',
+        class:'button'
+    };
+    const over=true;
     return html`
         ${title("Scores")}
-        ${table(model(mStates,shownGoal))}
+        ${mStates.isOver()?messageOver(mButtonOver):''}
+        ${table(model(mStates))}
     `;
 };
 

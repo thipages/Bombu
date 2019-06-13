@@ -1,14 +1,24 @@
 import {div, table} from "../components";
-import {checkResults, sum, countZero, _goals, players, REUSSITE, TRAFALGAR, trafalgarGoalIndexes} from "../model";
+import {
+    checkTrickList,
+    sum,
+    countZero,
+    _goals,
+    players,
+    REUSSITE,
+    TRAFALGAR,
+    trafalgarGoalIndexes,
+    checkTrickList_unitary
+} from "../model";
 import {fillArray} from "../utils";
 import {EVENT} from "../controller";
 import {tr,td,data} from "./common.js";
 import {THEAD, title} from "./common";
 const {render,html} = lighterhtml;
-const leftContent=(goal)=> (isCompleted()?"\u2611":"\xa0\xa0\xa0")+goal;
+const leftContent=(gIndex,goal)=> (isCompleted_unitary(gIndex)?"\u2611":"\xa0\xa0\xa0")+goal;
 const goalModel=(gIndex)=>[
         {
-            content:leftContent(_goals[gIndex][0])
+            content:leftContent(gIndex,_goals[gIndex][0])
         },
         ...fillArray(players.length).map((e,i)=>({content:iDiv(gIndex,i)}))
 ];
@@ -37,11 +47,11 @@ export const E1_SCORE=0;
 export const E1_VALIDER=1;
 export const E1_ANNULER=2;
 const fillZero=()=>fillArray(players.length,0);
-const isCompleted=()=>checkResults(gIndex,trickList);
+const isCompleted_all=()=>checkTrickList(trickList);
+const isCompleted_unitary=(gIndex)=>checkTrickList_unitary(gIndex,filterTrick(gIndex)[0].tricks);
 const filterTrick=(gIndex)=>trickList.filter(trick=>trick.gIndex===gIndex);
-const updateTrickList=(pgIndex,pIndex,gIndex)=> {
+const updateTrickList=(pgIndex,gIndex)=> {
     let tricks=filterTrick(gIndex)[0].tricks;
-    console.log("résussite",tricks,pgIndex,pIndex,gIndex);
     if (_goals[gIndex][0]===REUSSITE) {
         if (tricks[pgIndex] === 0) {
             if (sum(tricks) === 1) {
@@ -56,7 +66,7 @@ const updateTrickList=(pgIndex,pIndex,gIndex)=> {
         } else {
 
         }
-    } else if (!isCompleted()) {
+    } else if (!isCompleted_unitary(gIndex)) {
         tricks[pgIndex]++;
     } else {
         tricks[pgIndex]=0;
@@ -69,11 +79,10 @@ const onclick=(event)=> {
     if (data==='valider') {
         type=E1_VALIDER;
         transfer.trickList=trickList;
-        console.log("emit",transfer);
     } else if (data==='annuler') {
         type=E1_ANNULER;
     } else {
-        updateTrickList(data.pIndex,pIndex,data.gIndex);
+        updateTrickList(data.pIndex,data.gIndex);
         type=E1_SCORE;
     }
     _listener(EVENT(type,transfer));
@@ -94,7 +103,7 @@ const update=(args)=>{
     }
     gIndex=args.data.gIndex;
     pIndex=args.data.pIndex;
-    let bClass=["button",isCompleted()?"button-validate":"button-disabled"].join(" ");
+    let bClass=["button",isCompleted_all()?"button-validate":"button-disabled"].join(" ");
     return html`
         ${title("Saisie",_goals[gIndex][0]+" annoncé par "+players[pIndex])}
         ${table(
@@ -105,7 +114,7 @@ const update=(args)=>{
         )}
         <div class="menu bottom-menu">
         <button class="button button-cancel" data=${'annuler'} onclick=${onclick}>Annuler</button>
-        <button class=${bClass} data=${'valider'} onclick=${onclick} disabled=${!isCompleted()}>Valider</button>
+        <button class=${bClass} data=${'valider'} onclick=${onclick} disabled=${!isCompleted_all()}>Valider</button>
         </div>
     `;
 };

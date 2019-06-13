@@ -23,7 +23,7 @@ export const table = (model)=> {
         </table>`;
 };
 
-export const button=(model)=>html`<button disabled=${model.disabled} data=${model.data} onclick=${model.onclick}>OK</button>`
+export const button=(model)=>html`<button class="${model.class}" disabled=${model.disabled} data=${model.data} onclick=${model.onclick}>${model.content}</button>`
 export const div=(model)=> html`<div class=${model.class} data=${model.data} onclick=${model.onclick}>${model.content}</div>`;
 export const input=()=>html`<input size="2" />`;
 export const span=(model)=>html`<span class=${model.class}>${model.content}</span>`;

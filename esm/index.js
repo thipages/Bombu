@@ -1,8 +1,7 @@
-import {E_DONE, E_NOT_DONE, register as r0} from "./pages/page0";
+import {E_DONE, E_NOT_DONE, E_RESET, register as r0} from "./pages/page0";
 import {E1_ANNULER, E1_SCORE, E1_VALIDER, register as r1} from "./pages/page1";
 import {register} from "./controller";
 import {players, states} from "./model";
-
 const listener=(pageNum,args)=> {
     const same=()=>updater(pageNum,args);
     const page=(page)=>updater(page,args);
@@ -10,6 +9,9 @@ const listener=(pageNum,args)=> {
         case 0:
             if (args.type===E_NOT_DONE) {
                 page(1);
+            } else if (args.type===E_RESET) {
+                state.reset();
+                same();
             } else {
                 same();
             }
@@ -26,7 +28,7 @@ const listener=(pageNum,args)=> {
             break
     }
 };
-const state=states(players.length);
+const state=states(players.length,false);
 const updater=register(
     {state},
     listener,
