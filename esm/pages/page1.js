@@ -113,9 +113,10 @@ const update=(args)=>{
             }
         )}
         <div class="menu bottom-menu">
-        <button class="button button-cancel" data=${'annuler'} onclick=${onclick}>Annuler</button>
-        <button class=${bClass} data=${'valider'} onclick=${onclick} disabled=${!isCompleted_all()}>Valider</button>
+            <button class="button button-cancel" data=${'annuler'} onclick=${onclick}>Annuler</button>
+            <button class=${bClass} data=${'valider'} onclick=${onclick} disabled=${!isCompleted_all()}>Valider</button>
         </div>
+        <div style="font-size:10px;margin-right:10px">v1.0</div>
     `;
 };
 let gIndex,pIndex;
