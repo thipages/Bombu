@@ -116,7 +116,7 @@ const update=(args)=>{
             <button class="button button-cancel" data=${'annuler'} onclick=${onclick}>Annuler</button>
             <button class=${bClass} data=${'valider'} onclick=${onclick} disabled=${!isCompleted_all()}>Valider</button>
         </div>
-        <div style="font-size:10px;margin-right:10px">v1.2</div>
+        <div style="font-size:10px;margin-right:10px">v1.3</div>
     `;
 };
 let gIndex,pIndex;

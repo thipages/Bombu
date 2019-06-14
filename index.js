@@ -187,7 +187,7 @@
     const title=(subTitle,sub2Title)=> html$2`
     <div class="menu top-menu">
         <img src="king.jpg" alt="king"/>
-        <h3 class="title">El Bombu 2</h3>
+        <h3 class="title">El Bombu</h3>
         <h5 class="subtitle">${subTitle}</h5>
     </div>
     ${sub2Title?div({content:sub2Title,class:"sub2Title"}):''}
@@ -375,7 +375,7 @@
             <button class="button button-cancel" data=${'annuler'} onclick=${onclick$1}>Annuler</button>
             <button class=${bClass} data=${'valider'} onclick=${onclick$1} disabled=${!isCompleted_all()}>Valider</button>
         </div>
-        <div style="font-size:10px;margin-right:10px">v1.2</div>
+        <div style="font-size:10px;margin-right:10px">v1.3</div>
     `;
     };
     let gIndex,pIndex;
