@@ -276,7 +276,7 @@
     };
 
     const {render: render$4,html: html$4} = lighterhtml;
-    const leftContent=(gIndex,goal)=> (isCompleted_unitary(gIndex)?"\u2611":"\xa0\xa0\xa0")+goal;
+    const leftContent=(gIndex,goal)=> (isCompleted_unitary(gIndex)?"\u2714":"\xa0\xa0\xa0")+goal;
     const goalModel=(gIndex)=>[
             {
                 content:leftContent(gIndex,_goals[gIndex][0])

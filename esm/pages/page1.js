@@ -15,7 +15,7 @@ import {EVENT} from "../controller";
 import {tr,td,data} from "./common.js";
 import {THEAD, title} from "./common";
 const {render,html} = lighterhtml;
-const leftContent=(gIndex,goal)=> (isCompleted_unitary(gIndex)?"\u2611":"\xa0\xa0\xa0")+goal;
+const leftContent=(gIndex,goal)=> (isCompleted_unitary(gIndex)?"\u2714":"\xa0\xa0\xa0")+goal;
 const goalModel=(gIndex)=>[
         {
             content:leftContent(gIndex,_goals[gIndex][0])
@@ -116,7 +116,7 @@ const update=(args)=>{
             <button class="button button-cancel" data=${'annuler'} onclick=${onclick}>Annuler</button>
             <button class=${bClass} data=${'valider'} onclick=${onclick} disabled=${!isCompleted_all()}>Valider</button>
         </div>
-        <div style="font-size:10px;margin-right:10px">v1.3</div>
+        <div style="font-size:10px;margin-right:10px">v1.4</div>
     `;
 };
 let gIndex,pIndex;
