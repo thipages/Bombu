@@ -1,4 +1,4 @@
-const cacheName = 'bombu-v1.4';
+const cacheName = 'bombu-v1.41';
 const assets = [
     './', // stored in case of user
     './index.html',

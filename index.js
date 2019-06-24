@@ -375,7 +375,7 @@
             <button class="button button-cancel" data=${'annuler'} onclick=${onclick$1}>Annuler</button>
             <button class=${bClass} data=${'valider'} onclick=${onclick$1} disabled=${!isCompleted_all()}>Valider</button>
         </div>
-        <div style="font-size:10px;margin-right:10px">v1.3</div>
+        <div style="font-size:12px;margin-right:10px">version 1.41</div>
     `;
     };
     let gIndex,pIndex;
