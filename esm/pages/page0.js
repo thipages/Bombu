@@ -1,10 +1,9 @@
-import {fillArray} from "../utils";
 import {_goals, players} from "../model";
 import {button, table} from "../components";
 import {EVENT} from "../controller";
 import {tr,td,} from "./common.js";
 import {THEAD, title} from "./common";
-const {render,html} = lighterhtml;
+const {html} = lighterhtml;
 export const E_DONE=0;
 export const E_NOT_DONE=1;
 export const E_ALL=2;
@@ -49,14 +48,13 @@ const model=(mStates)=> ({
     thead:THEAD(),
     tfoot: {content:[tr(['Total', ...mStates.totalScoreByPlayer()].map(ctd=>td(ctd,"footer",-1,-1)))]}
 });
-const update=(event)=> {
+const update=()=> {
     const mButtonOver= {
         onclick:onclick,
         data:'reset',
         content:'REJOUER',
         class:'button'
     };
-    const over=true;
     return html`
         ${title("Scores")}
         ${mStates.isOver()?messageOver(mButtonOver):''}
@@ -64,7 +62,7 @@ const update=(event)=> {
     `;
 };
 
-let mStates, shownGoal;
+let mStates;
 let _listener,_sharedData;
 export const register=(listener, sharedData)=> {
     _listener=listener;

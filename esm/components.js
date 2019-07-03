@@ -1,6 +1,11 @@
 const {render,html} = lighterhtml;
-
-
+export const bottomMenu= (bClass,onclick, disabled,version)=> html`
+    <div class="menu bottom-menu">
+        <button class="button button-cancel" data=${'annuler'} onclick=${onclick}>Annuler</button>
+        <button class=${bClass} data=${'valider'} onclick=${onclick} disabled=${disabled}>Valider</button>
+    </div>
+    <div style="font-size:12px;margin-right:10px">version ${version}</div>
+`;
 const td=(model)=>html`${model.content.map(
     tr=>html`<tr>${tr.content.map(
         x=>html`<td onclick=${x.onclick} data=${x.data}>${x.content}</td>`)}</tr>`)}`;

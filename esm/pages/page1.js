@@ -1,4 +1,4 @@
-import {div, table} from "../components";
+import {bottomMenu, div, table} from "../components";
 import {
     checkTrickList,
     sum,
@@ -112,11 +112,7 @@ const update=(args)=>{
                 thead:THEAD()
             }
         )}
-        <div class="menu bottom-menu">
-            <button class="button button-cancel" data=${'annuler'} onclick=${onclick}>Annuler</button>
-            <button class=${bClass} data=${'valider'} onclick=${onclick} disabled=${!isCompleted_all()}>Valider</button>
-        </div>
-        <div style="font-size:12px;margin-right:10px">version 1.41</div>
+        ${bottomMenu(bClass,onclick, !isCompleted_all(),_sharedData.state.version)}
     `;
 };
 let gIndex,pIndex;
@@ -125,5 +121,6 @@ let _listener,_sharedData;
 export const register=(listener, sharedData)=> {
     _listener=listener;
     _sharedData=sharedData;
+    console.log(_sharedData);
     return update;
 };

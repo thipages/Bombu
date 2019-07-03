@@ -1,4 +1,5 @@
 import {fillArray} from "./utils.js"
+import {version} from "./version.js"
 //
 export const PLIS='Plis';
 export const COEURS='Coeurs';
@@ -119,6 +120,7 @@ export const states=(num,test)=> {
         scoreList:(pIndex,gIndex)=>lScores[pIndex][gIndex],
         totalScoreByPlayer:()=>getTotalScoreByPlayer(),
         scoreByGoal:(gIndex)=>getScoreByGoal(gIndex),
-        reset:()=>_reset()
+        reset:()=>_reset(),
+        version:version
     }
 };

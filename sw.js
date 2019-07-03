@@ -1,4 +1,5 @@
-const cacheName = 'bombu-v1.41';
+import {version} from "./esm/version.js";
+const cacheName = `bombu-v${version}`;
 const assets = [
     './', // stored in case of user
     './index.html',
