@@ -2,7 +2,6 @@ import {bottomMenu, div, table} from "../components";
 import {
     checkTrickList,
     sum,
-    countZero,
     _goals,
     players,
     REUSSITE,
@@ -12,7 +11,7 @@ import {
 } from "../model";
 import {fillArray} from "../utils";
 import {EVENT} from "../controller";
-import {tr,td,data} from "./common.js";
+import {tr,data} from "./common.js";
 import {THEAD, title} from "./common";
 const {render,html} = lighterhtml;
 const leftContent=(gIndex,goal)=> (isCompleted_unitary(gIndex)?"\u2714":"\xa0\xa0\xa0")+goal;
@@ -85,7 +84,7 @@ const onclick=(event)=> {
         updateTrickList(data.pIndex,data.gIndex);
         type=E1_SCORE;
     }
-    _listener(EVENT(type,transfer));
+    reg.listener(EVENT(type,transfer));
 };
 const update=(args)=>{
     if (!args) return html``;
@@ -112,15 +111,13 @@ const update=(args)=>{
                 thead:THEAD()
             }
         )}
-        ${bottomMenu(bClass,onclick, !isCompleted_all(),_sharedData.state.version)}
+        ${bottomMenu(bClass,onclick, !isCompleted_all(),reg.sharedData.state.version)}
     `;
 };
 let gIndex,pIndex;
 let trickList;
-let _listener,_sharedData;
+let reg;
 export const register=(listener, sharedData)=> {
-    _listener=listener;
-    _sharedData=sharedData;
-    console.log(_sharedData);
+    reg={listener,sharedData};
     return update;
 };
