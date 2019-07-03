@@ -15,7 +15,7 @@ const getBody=(players,goals, states)=> {
             let bodyContent=[];
             goals.map((goal,_gIndex) => [goal[0], ...states.scoreByGoal(_gIndex)]).forEach((row, gIndex) => {
                 bodyContent.push(
-                    tr(row.map((ctd,rowIndex)=>td(fillCell(ctd,rowIndex-1,gIndex,reg.sharedData.state),"main",rowIndex-1,gIndex,onclick,doneCss(rowIndex,gIndex,reg.sharedData.state))))
+                    tr(row.map((ctd,rowIndex)=>td(fillCell(ctd,rowIndex-1,gIndex,reg.sharedData),"main",rowIndex-1,gIndex,onclick,doneCss(rowIndex,gIndex,reg.sharedData))))
                 );
             });
 
@@ -35,7 +35,7 @@ const onclick=event=> {
         if (data.rowType==='main') reg.listener(EVENT(E_ALL, data));
     } else {
         if (data.rowType === 'main') {
-            if (reg.sharedData.state.done(data.pIndex, data.gIndex)) {
+            if (reg.sharedData.done(data.pIndex, data.gIndex)) {
                 reg.listener(EVENT(E_DONE, data));
             } else {
                 reg.listener(EVENT(E_NOT_DONE, data));
@@ -57,8 +57,8 @@ const update=()=> {
     };
     return html`
         ${title("Scores")}
-        ${reg.sharedData.state.isOver()?messageOver(mButtonOver):''}
-        ${table(model(reg.sharedData.state))}
+        ${reg.sharedData.isOver()?messageOver(mButtonOver):''}
+        ${table(model(reg.sharedData))}
     `;
 };
 let reg;

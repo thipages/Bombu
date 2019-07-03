@@ -11,7 +11,7 @@ const listener=(pageNum,args)=> {
             if (args.type===E_NOT_DONE) {
                 page(1);
             } else if (args.type===E_RESET) {
-                state.reset();
+                sharedData.reset();
                 same();
             } else {
                 same();
@@ -23,18 +23,18 @@ const listener=(pageNum,args)=> {
             } else if (args.type===E1_ANNULER) {
                 page(0);
             } else if (args.type===E1_VALIDER) {
-                state.add(args.data.pIndex,args.data.gIndex,args.data.trickList);
+                sharedData.add(args.data.pIndex,args.data.gIndex,args.data.trickList);
                 page(0);
             }
             break
     }
 };
-const state=states(players.length,false);
+const sharedData=states(players.length,false);
 const renderer = (html) => render (
     document.getElementById("app"),()=>html
 );
 const updater=register(
-    {state},
+    sharedData,
     listener,
     [r0,r1],
     renderer
