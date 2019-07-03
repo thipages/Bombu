@@ -3,14 +3,14 @@ import {E1_ANNULER, E1_SCORE, E1_VALIDER, register as r1} from "./pages/page1";
 import {players, states} from "./model";
 import {register} from "./controller.js";
 const {render,html} = lighterhtml;
-const listener=(pageNum,args)=> {
-    const same=()=>updater(pageNum,args);
-    const page=(page)=>updater(page,args);
+const listener=(pageNum,event)=> {
+    const same=()=>updater(pageNum,event);
+    const page=(page)=>updater(page,event);
     switch (pageNum) {
         case 0:
-            if (args.type===E_NOT_DONE) {
+            if (event.type===E_NOT_DONE) {
                 page(1);
-            } else if (args.type===E_RESET) {
+            } else if (event.type===E_RESET) {
                 sharedData.reset();
                 same();
             } else {
@@ -18,12 +18,12 @@ const listener=(pageNum,args)=> {
             }
             break;
         case 1:
-            if (args.type===E1_SCORE) {
+            if (event.type===E1_SCORE) {
                 same();
-            } else if (args.type===E1_ANNULER) {
+            } else if (event.type===E1_ANNULER) {
                 page(0);
-            } else if (args.type===E1_VALIDER) {
-                sharedData.add(args.data.pIndex,args.data.gIndex,args.data.trickList);
+            } else if (event.type===E1_VALIDER) {
+                sharedData.add(event.data.pIndex,event.data.gIndex,event.data.trickList);
                 page(0);
             }
             break
@@ -40,4 +40,4 @@ const updater=register(
     [r0,r1],
     renderer
 );
-updater();
+updater(0);
