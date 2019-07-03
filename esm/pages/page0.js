@@ -8,12 +8,12 @@ export const E_DONE=0;
 export const E_NOT_DONE=1;
 export const E_ALL=2;
 export const E_RESET=2;
-const doneCss=(rowIndex,gIndex,states)=> rowIndex===0?"" :states.done(rowIndex-1,gIndex)?"circle":"empty";
-const fillCell=(ctd,pIndex,gIndex,states)=>ctd===0 && !states.done(pIndex,gIndex) ?'\xa0':ctd;
+const doneCss=(rowIndex,gIndex,states)=> rowIndex===0?"" :states.isDone(rowIndex-1,gIndex)?"circle":"empty";
+const fillCell=(ctd,pIndex,gIndex,states)=>ctd===0 && !states.isDone(pIndex,gIndex) ?'\xa0':ctd;
 const getBody=(players,goals, states)=> {
     const table=()=> {
             let bodyContent=[];
-            goals.map((goal,_gIndex) => [goal[0], ...states.scoreByGoal(_gIndex)]).forEach((row, gIndex) => {
+            goals.map((goal,_gIndex) => [goal[0], ...states.getScoreByGoal(_gIndex)]).forEach((row, gIndex) => {
                 bodyContent.push(
                     tr(row.map((ctd,rowIndex)=>td(fillCell(ctd,rowIndex-1,gIndex,reg.sharedData),"main",rowIndex-1,gIndex,onclick,doneCss(rowIndex,gIndex,reg.sharedData))))
                 );
@@ -35,7 +35,7 @@ const onclick=event=> {
         if (data.rowType==='main') reg.listener(EVENT(E_ALL, data));
     } else {
         if (data.rowType === 'main') {
-            if (reg.sharedData.done(data.pIndex, data.gIndex)) {
+            if (reg.sharedData.isDone(data.pIndex, data.gIndex)) {
                 reg.listener(EVENT(E_DONE, data));
             } else {
                 reg.listener(EVENT(E_NOT_DONE, data));
@@ -46,7 +46,7 @@ const onclick=event=> {
 const model=(mStates)=> ({
     tbody:{content:getBody(players,_goals,mStates).table()},
     thead:THEAD(),
-    tfoot: {content:[tr(['Total', ...mStates.totalScoreByPlayer()].map(ctd=>td(ctd,"footer",-1,-1)))]}
+    tfoot: {content:[tr(['Total', ...mStates.getTotalScoreByPlayer()].map(ctd=>td(ctd,"footer",-1,-1)))]}
 });
 const update=()=> {
     const mButtonOver= {

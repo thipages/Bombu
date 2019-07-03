@@ -1,7 +1,7 @@
 import {E_DONE, E_NOT_DONE, E_RESET, register as r0} from "./pages/page0";
 import {E1_ANNULER, E1_SCORE, E1_VALIDER, register as r1} from "./pages/page1";
-import {register} from "./controller";
 import {players, states} from "./model";
+import {register} from "./controller.js";
 const {render,html} = lighterhtml;
 const listener=(pageNum,args)=> {
     const same=()=>updater(pageNum,args);
@@ -30,6 +30,7 @@ const listener=(pageNum,args)=> {
     }
 };
 const sharedData=states(players.length,false);
+
 const renderer = (html) => render (
     document.getElementById("app"),()=>html
 );

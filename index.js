@@ -112,12 +112,12 @@
         _reset();
         return {
             isOver:()=>_isOver(),
-            done:(pIndex,gIndex)=>lDone[pIndex][gIndex]===1,
+            isDone:(pIndex, gIndex)=>lDone[pIndex][gIndex]===1,
             add : (pIndex,gIndex,trickList)=>addTricks(pIndex,gIndex,trickList),
-            doneList:(gIndex)=>fillArray(num).map((item, pIndex)=>lDone[pIndex][gIndex]),
-            scoreList:(pIndex,gIndex)=>lScores[pIndex][gIndex],
-            totalScoreByPlayer:()=>getTotalScoreByPlayer(),
-            scoreByGoal:(gIndex)=>getScoreByGoal(gIndex),
+            getDoneList:(gIndex)=>fillArray(num).map((item, pIndex)=>lDone[pIndex][gIndex]),
+            getScoreList:(pIndex, gIndex)=>lScores[pIndex][gIndex],
+            getTotalScoreByPlayer:()=>getTotalScoreByPlayer(),
+            getScoreByGoal:(gIndex)=>getScoreByGoal(gIndex),
             reset:()=>_reset()
         }
     };
@@ -212,12 +212,12 @@
     const E_NOT_DONE=1;
     const E_ALL=2;
     const E_RESET=2;
-    const doneCss=(rowIndex,gIndex,states)=> rowIndex===0?"" :states.done(rowIndex-1,gIndex)?"circle":"empty";
-    const fillCell=(ctd,pIndex,gIndex,states)=>ctd===0 && !states.done(pIndex,gIndex) ?'\xa0':ctd;
+    const doneCss=(rowIndex,gIndex,states)=> rowIndex===0?"" :states.isDone(rowIndex-1,gIndex)?"circle":"empty";
+    const fillCell=(ctd,pIndex,gIndex,states)=>ctd===0 && !states.isDone(pIndex,gIndex) ?'\xa0':ctd;
     const getBody=(players,goals, states)=> {
         const table=()=> {
                 let bodyContent=[];
-                goals.map((goal,_gIndex) => [goal[0], ...states.scoreByGoal(_gIndex)]).forEach((row, gIndex) => {
+                goals.map((goal,_gIndex) => [goal[0], ...states.getScoreByGoal(_gIndex)]).forEach((row, gIndex) => {
                     bodyContent.push(
                         tr(row.map((ctd,rowIndex)=>td$1(fillCell(ctd,rowIndex-1,gIndex,mStates),"main",rowIndex-1,gIndex,onclick,doneCss(rowIndex,gIndex,mStates))))
                     );
@@ -239,7 +239,7 @@
             if (data.rowType==='main') _listener$1(EVENT(E_ALL, data));
         } else {
             if (data.rowType === 'main') {
-                if (mStates.done(data.pIndex, data.gIndex)) {
+                if (mStates.isDone(data.pIndex, data.gIndex)) {
                     _listener$1(EVENT(E_DONE, data));
                 } else {
                     _listener$1(EVENT(E_NOT_DONE, data));
@@ -250,7 +250,7 @@
     const model=(mStates)=> ({
         tbody:{content:getBody(players,_goals,mStates).table()},
         thead:THEAD(),
-        tfoot: {content:[tr(['Total', ...mStates.totalScoreByPlayer()].map(ctd=>td$1(ctd,"footer",-1,-1)))]}
+        tfoot: {content:[tr(['Total', ...mStates.getTotalScoreByPlayer()].map(ctd=>td$1(ctd,"footer",-1,-1)))]}
     });
     const update$1=(event)=> {
         const mButtonOver= {

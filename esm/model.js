@@ -1,6 +1,12 @@
 import {fillArray} from "./utils.js"
 import {version} from "./version.js"
 //
+export const filtered = (raw,allowed)=> Object.keys(raw)
+    .filter(key => allowed.includes(key))
+    .reduce((obj, key) => {
+        obj[key] = raw[key];
+        return obj;
+    }, {});
 export const PLIS='Plis';
 export const COEURS='Coeurs';
 export const DAMES='Dames';
@@ -114,13 +120,13 @@ export const states=(num,test)=> {
     _reset();
     return {
         isOver:()=>_isOver(),
-        done:(pIndex,gIndex)=>lDone[pIndex][gIndex]===1,
-        add : (pIndex,gIndex,trickList)=>addTricks(pIndex,gIndex,trickList),
-        doneList:(gIndex)=>fillArray(num).map((item, pIndex)=>lDone[pIndex][gIndex]),
-        scoreList:(pIndex,gIndex)=>lScores[pIndex][gIndex],
-        totalScoreByPlayer:()=>getTotalScoreByPlayer(),
-        scoreByGoal:(gIndex)=>getScoreByGoal(gIndex),
+        isDone:(pIndex, gIndex)=>lDone[pIndex][gIndex]===1,
+        getDoneList:(gIndex)=>fillArray(num).map((item, pIndex)=>lDone[pIndex][gIndex]),
+        getScoreList:(pIndex, gIndex)=>lScores[pIndex][gIndex],
+        getTotalScoreByPlayer:()=>getTotalScoreByPlayer(),
+        getScoreByGoal:(gIndex)=>getScoreByGoal(gIndex),
+        getVersion:()=>version,
         reset:()=>_reset(),
-        version:version
+        add : (pIndex,gIndex,trickList)=>addTricks(pIndex,gIndex,trickList)
     }
 };

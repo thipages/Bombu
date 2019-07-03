@@ -111,7 +111,7 @@ const update=(args)=>{
                 thead:THEAD()
             }
         )}
-        ${bottomMenu(bClass,onclick, !isCompleted_all(),reg.sharedData.version)}
+        ${bottomMenu(bClass,onclick, !isCompleted_all(),reg.sharedData.getVersion())}
     `;
 };
 let gIndex,pIndex;
