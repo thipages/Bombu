@@ -1,9 +1,11 @@
 import {_goals, players} from "../model";
 import {button, table} from "../components";
-import {EVENT} from "../controller";
+import {EVENT} from "../utils.js";
 import {tr,td,} from "./common.js";
 import {THEAD, title} from "./common";
+import {register as r} from "./../view-registrar/index.js"
 const {html} = lighterhtml;
+
 export const E_DONE=0;
 export const E_NOT_DONE=1;
 export const E_ALL=2;
@@ -49,6 +51,7 @@ const model=(mStates)=> ({
     tfoot: {content:[tr(['Total', ...mStates.getTotalScoreByPlayer()].map(ctd=>td(ctd,"footer",-1,-1)))]}
 });
 const update=()=> {
+    reg=registry();
     const mButtonOver= {
         onclick:onclick,
         data:'reset',
@@ -62,7 +65,5 @@ const update=()=> {
     `;
 };
 let reg;
-export const register=(listener, sharedData)=> {
-    reg={listener,sharedData};
-    return update;
-};
+
+const registry=r(0,update);

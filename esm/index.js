@@ -1,7 +1,7 @@
-import {E_DONE, E_NOT_DONE, E_RESET, register as r0} from "./pages/page0";
-import {E1_ANNULER, E1_SCORE, E1_VALIDER, register as r1} from "./pages/page1";
+import {E_DONE, E_NOT_DONE, E_RESET} from "./pages/page0";
+import {E1_ANNULER, E1_SCORE, E1_VALIDER} from "./pages/page1";
 import {players, states} from "./model";
-import {register} from "./controller.js";
+import {initRegistry} from "./view-registrar/index.js"
 const {render,html} = lighterhtml;
 const listener=(pageNum,event)=> {
     const same=()=>updater(pageNum,event);
@@ -34,10 +34,6 @@ const sharedData=states(players.length,false);
 const renderer = (html) => render (
     document.getElementById("app"),()=>html
 );
-const updater=register(
-    sharedData,
-    listener,
-    [r0,r1],
-    renderer
-);
+
+const updater=initRegistry(sharedData,listener,renderer);
 updater(0);

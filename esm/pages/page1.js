@@ -9,11 +9,12 @@ import {
     trafalgarGoalIndexes,
     checkTrickList_unitary
 } from "../model";
-import {fillArray} from "../utils";
-import {EVENT} from "../controller";
+import {fillArray,EVENT} from "../utils";
 import {tr,data} from "./common.js";
 import {THEAD, title} from "./common";
-const {render,html} = lighterhtml;
+import {register as r} from "./../view-registrar/index.js"
+const {html} = lighterhtml;
+
 const leftContent=(gIndex,goal)=> (isCompleted_unitary(gIndex)?"\u2714":"\xa0\xa0\xa0")+goal;
 const goalModel=(gIndex)=>[
         {
@@ -87,6 +88,7 @@ const onclick=(event)=> {
     reg.listener(EVENT(type,transfer));
 };
 const update=(args)=>{
+    reg=registry();
     if (!args) return html``;
     if (pIndex!==args.data.pIndex || gIndex!==args.data.gIndex) {
         gIndex=args.data.gIndex;
@@ -117,7 +119,5 @@ const update=(args)=>{
 let gIndex,pIndex;
 let trickList;
 let reg;
-export const register=(listener, sharedData)=> {
-    reg={listener,sharedData};
-    return update;
-};
+
+const registry=r(1,update);
